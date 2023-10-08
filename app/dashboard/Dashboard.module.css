@@ -1,0 +1,186 @@
+.dashboardContainer {
+    display: flex;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+    height: 95vh;
+}
+
+.dashboardLeftColumn {
+    flex: 1;
+    background-color: #333;
+    color: #fff;
+    box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    max-width: 20%;
+}
+
+@media (max-width: 768px) {
+    .dashboardLeftColumn {
+        max-width: 50%;
+    }
+}
+
+.leftColumnAppBar {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+/* Circular Avatar Styles */
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    background-color: #007bff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+}
+
+.avatarImage {
+    max-width: 80%;
+    max-height: 80%;
+}
+
+
+/* User Name Styles */
+
+.userName {
+    text-align: center;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+
+/* Highlighted Name Styles */
+
+.highlightedName {
+    text-align: center;
+    margin: 10px 0;
+    color: #fff;
+    border: 1px solid black;
+    background-color: #cccccc94;
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+
+/* Chat Button Styles */
+
+.chatButton {
+    color: #fff;
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    /* Center vertically */
+    justify-content: center;
+    /* Center horizontally */
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+
+/* Chat Icon Styles */
+
+.chatIcon {
+    width: 20px;
+    /* Adjust the width as needed */
+    height: 20px;
+    /* Adjust the height as needed */
+}
+
+.formField label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.formField input[type="text"],
+.formField input[type="email"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.dashboardRightColumn {
+    flex: 2;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+}
+
+.rightColumnAppBar {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.rightColumnContent {
+    flex: 1;
+    padding: 20px;
+}
+
+.rightColumnContent h1 {
+    font-size: 1.5rem;
+    margin-top: 0;
+}
+
+.formField select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.submitButton {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.custom-toast-container {
+    /* Add your custom styling here */
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 200px;
+    /* Adjust as needed */
+}
+
+.sideButton {
+    color: #007bff;
+    margin: 10px 0;
+    border-radius: 4px;
+    padding: 5px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.floatChat {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+}
+
+.floatTrack {
+    position: fixed;
+    bottom: 50px;
+    right: 20px;
+}
