@@ -1,252 +1,133 @@
-"use client"
-import * as React from "react"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { registerSchema } from "../../validators/auth-validator"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Toaster } from "@/components/ui/toaster"
-import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion"
+'use client';
+import React from 'react';
+import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { collection, addDoc } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
+import { auth, db } from '@/app/authentication/firebase';
+import { useToast } from '@/components/ui/use-toast';
 
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { cn } from "@/lib/utils"
-import { ArrowRight } from "lucide-react"
-import { useToast } from "@/components/ui/use-toast"
-import { easeInOut } from "framer-motion/dom"
-import { redirect, useRouter } from "next/navigation"
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
-import { auth } from "../firebase"
-import Image from "next/image"
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
+const Register: React.FC = () => {
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<FormData>();
+  const { toast } = useToast();
+  const router = useRouter();
 
-type Input = z.infer<typeof registerSchema>;
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    const { name, email, password, confirmPassword } = data;
 
-export default function Register() {
-    const { toast } = useToast()
-    const router = useRouter()
-    const [formStep, setFormStep] = React.useState(0)
-    const form = useForm<Input>({
-        resolver: zodResolver(registerSchema),
-        defaultValues: {
-            name: "",
-            email: "",
-            phone: "",
-            password: "",
-            confirmPassword: "",
-        },
-    })
-
-    function onSubmit(data: Input) {
-        if (data.confirmPassword !== data.password) {
-            toast(
-                {
-                    title: "Password do not match!",
-                    variant: "destructive",
-                }
-            )
-
-            return;
-        }
-        createUserWithEmailAndPassword(auth, data.email, data.password)
-            .then(() => {
-                signInWithEmailAndPassword(auth, data.email, data.password)
-                    .then(() => { 
-                        toast(
-                            {
-                                title: "Account created successfully!",
-                            }
-                        )
-                        router.push('/dashboard') })
-                    .catch((error) => { 
-                        toast(
-                            {
-                                title: "Something went wrong:(",
-                                variant: "destructive",
-                            });
-                        console.log(error); })
-            })
-            .catch((error) => { 
-                toast(
-                    {
-                        title: "Something went wrong:(",
-                        variant: "destructive",
-                    });
-                     });
-
+    // Validate password match
+    if (password !== confirmPassword) {
+      setError('confirmPassword', {
+        type: 'manual',
+        message: 'Passwords do not match',
+      });
+      return;
     }
 
-    return (
-        <main>
-            <div className='min-h-screen'>
-                <Card className="w-[350px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                    <CardHeader>
-                        <CardTitle>Register</CardTitle>
-                        <CardDescription>Solve your problems</CardDescription>
-                        <img src="https://img.freepik.com/free-vector/service-24-7-concept-illustration_114360-7380.jpg" alt="Customer Support" className="w-full mb-4" />
-                    </CardHeader>
-                    <CardContent>
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 relative p-1 overflow-x-hidden">
-                                <motion.div
-                                    animate={{ translateX: `-${formStep * 102}%` }}
-                                    transition={{ ease: "easeInOut" }}
-                                    className={cn("space-y-3", {
-                                        // hidden: formStep == 1,
-                                    })}>
+    try {
+      // Create user in Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
+      // Save additional user data to Firestore (optional)
+      await addDoc(collection(db, 'users'), {
+        uid: user.uid,
+        name: name,
+        email: email,
+      });
 
-                                    {/* Name */}
-                                    <FormField
-                                        control={form.control}
-                                        name="name"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Name</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Enter your name..." {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    {/* Email */}
-                                    <FormField
-                                        control={form.control}
-                                        name="email"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Email</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Enter your email..." {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    {/* Phone Number */}
-                                    <FormField
-                                        control={form.control}
-                                        name="phone"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Phone Number</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Enter your phone number..." {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <div className="justify-item-stretch">
+      // Show success toast
+      toast({
+        title: 'Registration successful!',
+        variant: 'default',
+      });
 
-                                        <Button className="float-right" variant={"link"} type="button"
-                                            onClick={() => router.push("/authentication/signin")}
-                                        >Already Register! Login.</Button>
-                                    </div>
+      // Redirect to the main page
+      router.push('/Main_page');
+    } catch (error) {
+      // Show error toast
+      toast({
+        title: 'Registration failed',
+        variant: 'destructive',
+      });
+    }
+  };
 
-                                </motion.div>
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+      <h1 className="text-center text-3xl font-bold mb-4">Register</h1>
+          <h3 className="text-center p-4">Enjoy your support journey with us!</h3>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Name */}
+          <div>
+            <label className="block text-sm font-medium">Name</label>
+            <input
+              {...register('name', { required: 'Name is required' })}
+              className="w-full border rounded px-3 py-2"
+              placeholder="Enter your Name..."
+            />
+            {errors.name && <span className="text-red-500">{errors.name.message}</span>}
+          </div>
 
-                                <motion.div
-                                    animate={{ translateX: `${100 - formStep * 100}%` }}
-                                    style={{ translateX: `${100 - formStep * 100}%` }}
-                                    transition={{ ease: "easeInOut" }}
-                                    className={cn("space-y-3 absolute top-0 left-0 right-0", {
-                                        // hidden: formStep == 0,
-                                    })}>
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium">Email</label>
+            <input
+              type="email"
+              {...register('email', { required: 'Email is required' })}
+              className="w-full border rounded px-3 py-2"
+              placeholder="Enter your email..."
+            />
+            {errors.email && <span className="text-red-500">{errors.email.message}</span>}
+          </div>
 
-                                    {/* Password */}
-                                    <FormField
-                                        control={form.control}
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium">New Password</label>
+            <input
+              type="password"
+              {...register('password', { required: 'Password is required' })}
+              className="w-full border rounded px-3 py-2"
+            />
+            {errors.password && <span className="text-red-500">{errors.password.message}</span>}
+          </div>
 
-                                        name="password"
-                                        render={({ field }) => (
-                                            <FormItem >
-                                                <FormLabel>New Password</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Enter your password..." type="password" tabIndex={-1} {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    {/* Confirm Password */}
-                                    <FormField
-                                        control={form.control}
-                                        name="confirmPassword"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Confirm Password</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Please verify your password..." type="password" tabIndex={-1} {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </motion.div>
+          {/* Confirm Password */}
+          <div>
+            <label className="block text-sm font-medium">Confirm Password</label>
+            <input
+              type="password"
+              {...register('confirmPassword', { required: 'Confirm Password is required' })}
+              className="w-full border rounded px-3 py-2"
+            />
+            {errors.confirmPassword && (
+              <span className="text-red-500">{errors.confirmPassword.message}</span>
+            )}
+          </div>
 
-                                <div className="flex gap-2">
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 transition duration-300"
+          >
+            Register
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
 
-
-                                    <Button type="button"
-                                        variant={'ghost'}
-                                        className={cn({ hidden: formStep == 1, })}
-                                        onClick={() => {
-                                            form.trigger(['name', 'email', 'phone'])
-                                            const emailState = form.getFieldState('email')
-                                            const nameState = form.getFieldState('name')
-                                            const phoneState = form.getFieldState('phone')
-
-                                            if (!emailState.isDirty || emailState.invalid) return;
-                                            if (!nameState.isDirty || nameState.invalid) return;
-                                            if (!phoneState.isDirty || emailState.invalid) return;
-                                            setFormStep(1);
-                                        }}
-                                    >Next Step
-                                        <ArrowRight className="w-4 h-4 ml2" />
-                                    </Button>
-
-                                    <Button type="submit"
-                                        className={cn({
-                                            hidden: formStep == 0,
-                                        })}
-                                    >Submit
-                                    </Button>
-
-                                    <Button type="button"
-                                        variant={'ghost'}
-                                        className={cn({ hidden: formStep == 0, })}
-                                        onClick={() => { setFormStep(0); }}
-                                    >Go Back</Button>
-
-                                </div>
-                            </form>
-                        </Form>
-                    </CardContent>
-                </Card>
-                <Toaster />
-            </div>
-
-        </main>
-
-
-
-    )
-}
+export default Register

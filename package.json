@@ -17,6 +17,7 @@
     "@radix-ui/react-toggle": "^1.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "firebase": "^10.5.0",
     "framer": "^2.4.1",
     "lucide-react": "^0.284.0",
     "next": "13.5.4",
@@ -24,6 +25,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.47.0",
     "react-icons": "^4.11.0",
+    "react-toastify": "^9.1.3",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"

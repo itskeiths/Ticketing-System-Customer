@@ -1,71 +1,69 @@
 'use client';
 import React, { useState } from 'react';
-import { getFirestore, collection, addDoc } from 'firebase/firestore'; // Use 'lite' version
-import { AiOutlineMessage } from 'react-icons/ai';
-import {db}  from '../firebaseConfig.js';
+import { collection, addDoc } from 'firebase/firestore'; 
+import { db } from '../firebaseConfig.js';
 import styles from './Dashboard.module.css';
-import ChatBox from '@/app/dashboard/Chat'
-import {MdOutlineTrackChanges} from 'react-icons/md'
-import Link from 'next/link.js';
 import { auth } from '@/app/authentication/firebase'
+import { onAuthStateChanged } from 'firebase/auth';
+import { toast ,ToastContainer} from 'react-toastify'
 
-
-
-
-const priorityMapping = {
-  'low': '3',
-  'medium': '2',
-  'high': '1',
-};
-
+let user = auth.currentUser;
+let uid = user?.uid;
+let email_id = user?.email;
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    uid = user.uid;
+    email_id = user.email;
+  }
+})
 
 const Dashboard = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [subject, setSubject] = useState('');
-    const [priority, setPriority] = useState('low');
-    const [team, setTeam] = useState('1');
-    const [description, setDescription] = useState('');
-    const [isChatOpen, setIsChatOpen] = useState(false);
-    
-  const user = auth.currentUser;
+  const [name, setName] = useState('');
+  const [subject, setSubject] = useState('');
+  const [email, setEmail] = useState(email_id);
+  const [priority, setPriority] = useState('1');
+  const [Issue, setIssue] = useState('1');
+  const [description, setDescription] = useState('');
 
-    async function addData(name: string, email: string, subject: string, description: string, priority: string, team: string) {
-      try {
-        const docRef = await addDoc(collection(db, 'Form'), {
-          name: name,
-          email: email,
-          subject: subject,
-          description: description,
-          priority: priority,
-          team: team,
-          time: new Date().toLocaleString(),
-          status: 'New',
-          userId : user?.uid
-        }
-        );
-  
-      } catch {
-        console.error('Error');
-      }
+  async function addData(name: string, email: string, subject: string, description: string, priority: string, Issue: string) {
+    try {
+      const docRef = await addDoc(collection(db, 'Form'), {
+        name: name,
+        email: email_id,
+        subject: subject,
+        description: description,
+        priority: priority,
+        Issue: Issue,
+        time: new Date().toLocaleString(),
+        status: 'New',
+        userId: user?.uid
+      });
+
+     
+
+    } catch {
+     
+      console.error('Error');
     }
+  }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-  
-      try {
-        await addData(name, email, subject, description, priority, team);
-        setName('');
-        setEmail('');
-        setSubject('');
-        setPriority('low');
-        setTeam('1');
-        setDescription('');
-      } catch (error) {
-        console.error('Error adding document: ', error);
-      }
-    };
+    try {
+      await addData(name, email_id ? email_id : "", subject, description, priority, Issue);
+      toast.success("Sucessfully Submitted!")
+      setName('');
+      setEmail(email_id ? email_id : ' ')
+      setSubject('');
+      setPriority('');
+      setIssue('');
+      setDescription('');
+    } catch (error) {
+      console.error('Error adding document: ', error);
+    }
+  };
+
 
   return (
     <div className={styles.dashboardContainer}>
@@ -93,8 +91,8 @@ const Dashboard = () => {
               type="email"
               id="email"
               className="w-full border rounded-lg px-4 py-2"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={email_id?email_id:" "}
+              onChange={(e) => setEmail(email_id?email_id:' ')}
               required
             />
           </div>
@@ -111,33 +109,35 @@ const Dashboard = () => {
               required
             />
           </div>
+  
           <div className={styles.formField}>
             <label htmlFor="priority">Priority</label>
             <select
               id="priority"
-              name="priority"
-              value= "priority"
-              onChange={(e) => setPriority(priorityMapping[e.target.value])}
+              name="Issue"
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
               required
             >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
+              <option value={3}>Low</option>
+              <option value={2}>Medium</option>
+              <option value={1}>High</option>
+
             </select>
           </div>
           <div className={styles.formField}>
-            <label htmlFor="team">Team</label>
+            <label htmlFor="Issue">Issue</label>
             <select
-              id="team"
-              name="team"
-              value={team}
-              onChange={(e) => setTeam(e.target.value)}
+              id="Issue"
+              name="Issue"
+              value={Issue}
+              onChange={(e) => setIssue(e.target.value)}
               required
             >
-              <option value="1">Team 1</option>
-              <option value="2">Team 2</option>
-              <option value="3">Team 3</option>
-              {/* Add more teams as needed */}
+              <option value="1">Issue 1</option>
+              <option value="2">Issue 2</option>
+              <option value="3">Issue 3</option>
+  
             </select>
           </div>
           <div>
@@ -159,18 +159,6 @@ const Dashboard = () => {
           Submit Ticket
         </button>
         </form>
-        <button
-          className={`${styles.sideButton} ${styles.floatChat}`}
-          onClick={() => setIsChatOpen(true)}
-        >
-          <AiOutlineMessage />
-        </button>
-        <Link href='./Track'
-          className={`${styles.sideButton} ${styles.floatTrack}`}
-        >
-          <MdOutlineTrackChanges />
-        </Link>
-        {isChatOpen && <ChatBox onClose={() => setIsChatOpen(false)} />}
       </div>
     
 

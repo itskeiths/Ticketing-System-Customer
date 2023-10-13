@@ -73,7 +73,7 @@ export default function ForgotPassword() {
           <CardHeader>
             <CardTitle>Forgot Password</CardTitle>
             <CardDescription>Get reset password link on your mail!</CardDescription>
-            <img src="https://img.freepik.com/premium-vector/forgot-password-illustration_65141-418.jpg?w=2000" alt="Customer Support" className="w-full mb-4" />
+            {/* <img src="https://img.freepik.com/premium-vector/forgot-password-illustration_65141-418.jpg?w=2000" alt="Customer Support" className="w-full mb-4" /> */}
           </CardHeader>
           <CardContent>
             <Form {...form}>
