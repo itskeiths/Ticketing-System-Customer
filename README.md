@@ -15,10 +15,10 @@
 3. **Track Status:**
    - Check the status of submitted tickets through the "Track Status" page.
      
-      ![](c4.png)
+      ![](c5.png)
 
 4. **Real-time Communication:**
    - Communicate with assigned agents in real time using the messaging app.
 
-     ![](c5.png)
+     ![](c6.png)
 
