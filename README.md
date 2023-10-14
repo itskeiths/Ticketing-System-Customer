@@ -10,7 +10,7 @@
    - Customers can submit complaints through the "Raise Ticket" page.
    - Choose the appropriate issue, and the system assigns the ticket to the relevant agent.
   
-     ![](c3.png)
+     ![](c4.png)
      
 3. **Track Status:**
    - Check the status of submitted tickets through the "Track Status" page.
