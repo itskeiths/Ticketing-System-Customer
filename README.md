@@ -1,5 +1,5 @@
 # Customer Care Support App
-## Client Side Features: (Website)["https://ticketing-system-client.vercel.app/"]
+## Client Side Features: (Website)[https://ticketing-system-client.vercel.app/]
 
 1. **User Registration and Login:**
    Customers must register and log in to access the service.
