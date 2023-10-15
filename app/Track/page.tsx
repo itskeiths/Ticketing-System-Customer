@@ -48,12 +48,6 @@ export default function Orders () {
             <p className='text-gray-600 mb-2'>
               <span className='font-semibold'>Order Status:</span> {order.status}
             </p>
-             <p className='text-gray-600 mb-2'>
-              <span className='font-semibold'>Submitted Time :</span> {order.time}
-            </p>
-             <p className='text-gray-600 mb-2'>
-              <span className='font-semibold'>Processed Time:</span> {order?.ProcessTime}
-            </p>
             <p className='text-gray-600 mb-2'>
               <span className='font-semibold'>Issue:</span> {order.Issue}
             </p>
